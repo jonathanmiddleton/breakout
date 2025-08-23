@@ -6,9 +6,12 @@ class ExecutePython(ToolProtocol):
     _definition = ChatCompletionToolParam(
         type = "function",
         function = {
-            "name": "execute_python_script",
-            "description": "A complete Python script with a **main** function that prints output. The output "
-                           "will be supplied in context for fulfilling the user request.",
+            "name": "python_script",
+            "description": "A complete Python script with a **main** function that prints output. The script will be"
+                           "executed by calling the **main** function. The output "
+                           "will be supplied in context for fulfilling the user request. Wrap all requests in try/excep t"
+                           "to handle potential exceptions. Any required credentials "
+                           "or **API keys** will be automatically provided by the system.",
             "parameters": {
                 "type": "object",
                 "properties": {
@@ -27,6 +30,7 @@ class ExecutePython(ToolProtocol):
     def _execute_python_script(args: dict) -> None:
         namespace: dict = {}
         try:
+            print("\n\n"+ args["script"])
             compiled = compile(args["script"], "tool-script", "exec")
             exec(compiled, namespace, namespace)
             if "main" not in namespace or not callable(namespace["main"]):
@@ -40,4 +44,4 @@ class ExecutePython(ToolProtocol):
     def tool() -> ChatCompletionToolParam:
         return ExecutePython._definition
 
-    DISPATCH = {"execute_python_script": _execute_python_script}
+    DISPATCH = {"python_script": _execute_python_script}

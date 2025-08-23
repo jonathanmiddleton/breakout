@@ -1,5 +1,5 @@
 from tools.tool_registry import ToolRegistry
-from tools.execute_python_tool import ExecutePython
+from tools.python_tool import ExecutePython
 from prompts import get_messages
 import json
 from openai import OpenAI
@@ -14,7 +14,7 @@ def _completion(query: str) -> None:
             messages=get_messages(query,registry.tools()),
             temperature=0.6,
             tools=registry.tools(),
-            model="Qwen3",
+            model="",
             top_p=0.95,
             frequency_penalty=1.1,
             seed=1337,
@@ -24,15 +24,21 @@ def _completion(query: str) -> None:
             if event.type == "tool_calls.function.arguments.done":
                 name, args = event.name, json.loads(event.arguments)
                 registry.execute_tool(name, args)
-            elif event.type in ["content.delta", "content.done", "tool_calls.function.arguments.delta"]:
+            elif event.type in ["tool_calls.function.arguments.delta"]:
                 continue
-            else:
+            elif event.type == "chunk":
                 try:
-                    r = event.chunk.choices[0].delta.content
-                    if r is not None:
-                        print(r, end="", flush=True)
+                    reasoning_content = event.chunk.choices[0].delta.model_extra.get("reasoning_content")
+                    if reasoning_content is not None:
+                        print(reasoning_content, end="", flush=True)
                 except Exception as e:
                     print(f"Error: {e}")
+            elif event.type == "content.delta":
+                print(event.delta, end="", flush=True)
+            elif event.type == "content.done":
+                print(event.content, end="", flush=True)
+            else:
+                print(f"Event: {event}")
 
 if __name__ == "__main__":
-    _completion("what is the weather in london?")
+    _completion("Tell me the weather in London without asking me any questions.")

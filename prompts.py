@@ -6,6 +6,7 @@ _SYSTEM_PROMPT = """
             provided context is sufficient to answer a user's query **accurately**. 
             If the supplied context is insufficient, use a tool to gather more information. 
             You are allowed to write Python scripts to fulfill the user's request.
+            Do whatever is necessary to fulfill the request. Do not fail.
 """
 
 def get_messages(p: str, tools: list[ChatCompletionFunctionToolParam] = None) -> list[ChatCompletionSystemMessageParam | ChatCompletionUserMessageParam]:
