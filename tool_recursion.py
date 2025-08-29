@@ -1,7 +1,7 @@
 from typing import Any
 
 from openai.types.chat import ChatCompletionSystemMessageParam, ChatCompletionAssistantMessageParam, \
-    ChatCompletionToolParam
+    ChatCompletionToolParam, ChatCompletionDeveloperMessageParam
 
 from tools.tool_registry import ToolRegistry
 from tools.definition_tool import DefinitionTool
@@ -57,8 +57,8 @@ def _completion(messages: list[Any]) -> None:
         print("\n\n")
 
         messages.append(ChatCompletionAssistantMessageParam(role="assistant", content="".join(reasoning_buffer)))
-        messages.append(ChatCompletionSystemMessageParam(
-            role="system",
+        messages.append(ChatCompletionDeveloperMessageParam(
+            role="developer",
             content=f"{{\"The assistant called the tool {name} with the following arguments: {arg} and returned the following result: {result}\"}}")
         )
         _completion(messages)
