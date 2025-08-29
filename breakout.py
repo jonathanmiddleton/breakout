@@ -1,6 +1,6 @@
 from tools.tool_registry import ToolRegistry
 from tools.python_tool import ExecutePython
-from prompts import get_messages
+from prompts.python_prompts import get_messages
 import json
 from openai import OpenAI
 
@@ -8,11 +8,11 @@ registry = ToolRegistry()
 registry.register_tool(ExecutePython.tool(), ExecutePython.DISPATCH)
 
 def _completion(query: str) -> None:
-    base_url = "http://localhost:8080/v1"
+    base_url = "http://localhost:8228/v1"
     client = OpenAI(base_url=base_url, api_key="")
     with client.chat.completions.stream(
             messages=get_messages(query,registry.tools()),
-            temperature=0.6,
+            temperature=0.0,
             tools=registry.tools(),
             model="",
             top_p=0.95,
