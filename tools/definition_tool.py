@@ -32,7 +32,7 @@ class DefinitionTool(ToolProtocol):
 
     @staticmethod
     def _get_definition(args: dict) -> tuple[str, str]:
-        term = args["term"]
+        term = args["term"].lower()
         return term, DefinitionTool.TERMS[term]
 
 
